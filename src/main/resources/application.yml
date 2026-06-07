@@ -2,7 +2,7 @@ spring:
   application:
     name: yu-ai-agent
   datasource:
-    url: rm-cn-t9i4t30l50001y7o.rwlb.rds.aliyuncs.com:5432/yu-ai-agent
+    url: jdbc:postgresql://rm-cn-t9i4t30l50001y7o.rwlb.rds.aliyuncs.com:5432/yu-ai-agent
     username: Admin_user
     password: Alipg556
   ai:
@@ -11,6 +11,10 @@ spring:
       chat:
         options:
           model: qwen-plus
+      embedding:
+        options:
+          model: text-embedding-v4
+          dimensions: 1536
     ollama:
       base-url: http://localhot:11434
       chat:

@@ -2,6 +2,8 @@ package com.yupi.yuaiagent.app;
 
 import com.yupi.yuaiagent.advisor.MyLoggerAdvisor;
 import com.yupi.yuaiagent.chatmemory.FileBasedChatMemory;
+import com.yupi.yuaiagent.rag.LoveAppRagCustomAdvisorFactory;
+import com.yupi.yuaiagent.rag.QueryRewriter;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
@@ -116,6 +118,13 @@ public class LoveApp {
 
     @Resource
     private Advisor loveAppRagCloudAdvisor;
+
+    @Resource
+    private VectorStore pgVectorVectorStore;
+
+    @Resource
+    private QueryRewriter queryRewriter;
+
     /**
      * 和RAG知识库进行对话
      * @param message
@@ -123,16 +132,25 @@ public class LoveApp {
      * @return
      */
     public String doChatWithRAG(String message,String chatID){
+        //查询重写
+        String rewrittenMessage = queryRewriter.doQueryRewrite(message);
         ChatResponse chatResponse = chatClient
                 .prompt()
-                .user(message)
+                //使用改写后的查询
+                .user(rewrittenMessage)
                 .advisors(spec -> spec.param(ChatMemory.CONVERSATION_ID, chatID))
                 //开启日志，便于观察效果
                 .advisors(new MyLoggerAdvisor())
                 //应用RAG知识库问答
 //                .advisors(QuestionAnswerAdvisor.builder(loveAppVectorStore).build())
                 //应用RAG检索增强服务(基于云知识库服务)
-                .advisors(loveAppRagCloudAdvisor)
+//                .advisors(loveAppRagCloudAdvisor)
+                //应用RAG检索增强服务(基于PGVecor向量存储)
+//                .advisors(QuestionAnswerAdvisor.builder(pgVectorVectorStore).build())
+                //应用自定义的RAG检索增强服务（文档查询器+上下文增强器）
+                .advisors(LoveAppRagCustomAdvisorFactory.createLoveAppRagCustomAdvisor(
+                        loveAppVectorStore,"单身"
+                ))
                 .call()
                 .chatResponse();
         String content = chatResponse.getResult().getOutput().getText();
