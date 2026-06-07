@@ -1,17 +1,21 @@
 package com.yupi.yuaiagent.app;
 
 import com.yupi.yuaiagent.advisor.MyLoggerAdvisor;
-import com.yupi.yuaiagent.advisor.ReReadingAdvisor;
 import com.yupi.yuaiagent.chatmemory.FileBasedChatMemory;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
+import org.springframework.ai.chat.client.advisor.api.Advisor;
+import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.memory.InMemoryChatMemoryRepository;
 import org.springframework.ai.chat.memory.MessageWindowChatMemory;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Flux;
 
 import java.util.List;
 
@@ -31,18 +35,18 @@ public class LoveApp {
      * @param dashscopeChatModel
      */
     public LoveApp(ChatModel dashscopeChatModel) {
-        //初始化基于文件的对话记忆
-        String fileDir = System.getProperty("user.dir")+"/tmp/chat-memory";
-        ChatMemory chatMemory =new FileBasedChatMemory(fileDir);
+//        //初始化基于文件的对话记忆
+//        String fileDir = System.getProperty("user.dir")+"/tmp/chat-memory";
+//        ChatMemory chatMemory =new FileBasedChatMemory(fileDir);
         // 初始化基于内存的对话记忆
-        MessageWindowChatMemory Memory = MessageWindowChatMemory.builder()
+        MessageWindowChatMemory chatMemory = MessageWindowChatMemory.builder()
                 .chatMemoryRepository(new InMemoryChatMemoryRepository())
-                .maxMessages(10)
+                .maxMessages(20)
                 .build();
         chatClient = ChatClient.builder(dashscopeChatModel)
                 .defaultSystem(SYSTEM_PROMPT)
                 .defaultAdvisors(
-                        MessageChatMemoryAdvisor.builder(Memory).build(),
+                        MessageChatMemoryAdvisor.builder(chatMemory).build(),
                         //自定义日志Advisor，可按需开启
                         new MyLoggerAdvisor()
 //                        //自定义推理增强Advisor，可按需开启
@@ -58,17 +62,32 @@ public class LoveApp {
      * @return
      */
     public String doChat(String message,String chatID) {
-        ChatResponse response = chatClient
+        ChatResponse chatResponse = chatClient
                 .prompt()
                 .user(message)
                 .advisors(spec -> spec.param(ChatMemory.CONVERSATION_ID, chatID))
                 .call()
                 .chatResponse();
-        String content = response.getResult().getOutput().getText();
+        String content = chatResponse.getResult().getOutput().getText();
         log.info("content: {}", content);
         return content;
     }
 
+    /**
+     * AI 基础对话（支持多轮对话记忆，SSE 流式传输）
+     *
+     * @param message
+     * @param chatId
+     * @return
+     */
+    public Flux<String> doChatByStream(String message, String chatId) {
+        return chatClient
+                .prompt()
+                .user(message)
+                .advisors(spec -> spec.param(ChatMemory.CONVERSATION_ID, chatId))
+                .stream()
+                .content();
+    }
     record LoveReport(String title, List<String> suggestios){
 
     }
@@ -89,5 +108,35 @@ public class LoveApp {
                 .entity(LoveReport.class);
         log.info("loveReport: {}", loveReport);
         return loveReport;
+    }
+
+    //恋爱知识库问答功能
+    @Resource
+    private VectorStore loveAppVectorStore;
+
+    @Resource
+    private Advisor loveAppRagCloudAdvisor;
+    /**
+     * 和RAG知识库进行对话
+     * @param message
+     * @param chatID
+     * @return
+     */
+    public String doChatWithRAG(String message,String chatID){
+        ChatResponse chatResponse = chatClient
+                .prompt()
+                .user(message)
+                .advisors(spec -> spec.param(ChatMemory.CONVERSATION_ID, chatID))
+                //开启日志，便于观察效果
+                .advisors(new MyLoggerAdvisor())
+                //应用RAG知识库问答
+//                .advisors(QuestionAnswerAdvisor.builder(loveAppVectorStore).build())
+                //应用RAG检索增强服务(基于云知识库服务)
+                .advisors(loveAppRagCloudAdvisor)
+                .call()
+                .chatResponse();
+        String content = chatResponse.getResult().getOutput().getText();
+        log.info("content: {}", content);
+        return content;
     }
 }
