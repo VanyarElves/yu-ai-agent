@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    datasource:
+      url: jdbc:postgresql://rm-cn-t9i4t30l50001y7o.rwlb.rds.aliyuncs.com:5432/yu-ai-agent
+      username: Admin_user
+      password: Alipg556
+  ai:
+    dashscope:
+      api-key: sk-bc174cd08ee1486a98ba6b2753f10fd6
