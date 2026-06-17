@@ -1,18 +1,20 @@
 spring:
+  profiles:
+    active: local
   application:
     name: yu-ai-agent
   ai:
-      chat:
-        options:
-          model: qwen-plus
-      embedding:
-        options:
-            model: text-embedding-v4
-            dimensions: 1536
+    chat:
+      options:
+        model: qwen-plus
   ollama:
     base-url: http://localhot:11434
     chat:
       model: deepseek-r1:1.5b
+  mcp:
+    client:
+      stdio:
+        servers-configuration: classpath:mcp-servers.json
   vectorstore:
     pgvector:
       index-type: HNSW
@@ -40,3 +42,7 @@ knife4j:
   enable: true
   setting:
     language: zh_cn
+#修改日志级别，查看 Spring AI 更多调用细节
+logging:
+  level:
+    org.springframework.ai: DEBUG
