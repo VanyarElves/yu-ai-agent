@@ -178,7 +178,7 @@ public class LoveApp {
                 //开启日志
                 .advisors(new MyLoggerAdvisor())
                 //调用工具
-                .tools(allTools)
+                .toolCallbacks(allTools)
                 .call()
                 .chatResponse();
         String content = chatResponse.getResult().getOutput().getText();
