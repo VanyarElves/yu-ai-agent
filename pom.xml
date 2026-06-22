@@ -65,13 +65,11 @@
             <groupId>com.alibaba.cloud.ai</groupId>
             <artifactId>spring-ai-alibaba-agent-framework</artifactId>
         </dependency>
-        <!-- DashScope ChatModel 支持 -->
         <dependency>
             <groupId>com.alibaba.cloud.ai</groupId>
             <artifactId>spring-ai-alibaba-starter-dashscope</artifactId>
             <version>1.1.2.1</version>
         </dependency>
-        <!--langchain4j DashScope -->
         <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-community-dashscope</artifactId>
