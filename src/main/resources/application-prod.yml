@@ -1,1 +1,43 @@
 #生产环境配置，会覆盖application.yml配置文件
+spring:
+  application:
+    name: yu-ai-agent
+  ai:
+    chat:
+      options:
+        model: qwen-plus
+    dashscope:
+      api-key: sk-f68255a47b664099be39c7e3d5436a2e
+      embedding:
+        options:
+          model: text-embedding-v4
+          dimensions: 1536
+  datasource:
+    url: jdbc:postgresql://rm-cn-t9i4t30l50001y7o.rwlb.rds.aliyuncs.com:5432/yu-ai-agent
+    username: Admin_user
+    password: Alipg556
+#searchAPI
+search-api:
+  api-key: k7qyya1ieoss5mf1jP5pomRw
+#后端接口
+server:
+  port: 8123
+  servlet:
+    context-path: /api
+# springdoc-openapi接口文档配置
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+  group-configs:
+    - group: 'default'
+      paths-to-match: '/**'
+      packages-to-scan: com.yupi.yuaiagent.controller
+# knife4j的增强配置，不需要增强可以不配
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
