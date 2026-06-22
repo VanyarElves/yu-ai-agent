@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.yupi</groupId>
     <artifactId>yu-ai-agent</artifactId>
-    <version>0.0.1</version>
+    <version>>0.0.1-SNAPSHOT</version>
     <name>yu-ai-agent</name>
     <description>yu-ai-agent</description>
     <url/>
@@ -109,16 +109,11 @@
         <!--            <groupId>org.springframework.ai</groupId>-->
         <!--            <artifactId>spring-ai-starter-vector-store-pgvector</artifactId>-->
         <!--        </dependency>-->
-
         <!-- Spring AI MCP Client -->
         <dependency>
             <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-starter-mcp-client</artifactId>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.ai</groupId>-->
-<!--            <artifactId>spring-ai-starter-mcp-server-webmvc</artifactId>-->
-<!--        </dependency>-->
         <!-- Jsoup HTML 解析库 -->
         <dependency>
             <groupId>org.jsoup</groupId>
@@ -142,8 +137,8 @@
         </dependency>
         <dependency>
             <groupId>cn.hutool</groupId>
-            <artifactId>hutool-ai</artifactId>
-            <version>5.8.38</version>
+            <artifactId>hutool-all</artifactId>
+            <version>5.8.46</version>
         </dependency>
         <!--支持结构化输出-->
         <dependency>
@@ -171,6 +166,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>RELEASE</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

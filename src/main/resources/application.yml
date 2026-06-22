@@ -11,19 +11,24 @@ spring:
     base-url: http://localhot:11434
     chat:
       model: deepseek-r1:1.5b
-  mcp:
-    client:
-      stdio:
-        servers-configuration: classpath:mcp-servers.json
-  vectorstore:
-    pgvector:
-      index-type: HNSW
-      dimensions: 1536
-      distance-type: COSINE_DISTANCE
-      max-document-batch-size: 10000
+      #临时注释掉，便于开发调试和部署
+#  mcp:
+#    client:
+#      sse:
+#        connections:
+#          server1:
+#            url:http://localhost:8127
+#      stdio:
+#        servers-configuration: classpath:mcp-servers.json
+#  vectorstore:
+#    pgvector:
+#      index-type: HNSW
+#      dimensions: 1536
+#      distance-type: COSINE_DISTANCE
+#      max-document-batch-size: 10000
 server:
   port: 8123
-  servet:
+  servlet:
     context-path: /api
 # springdoc-openapi接口文档配置
 springdoc:
